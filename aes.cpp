@@ -51,37 +51,37 @@ void inverseByteSub(unsigned char (&cypherText)[rows][cols]) {
    }
 }
 template <size_t rows, size_t cols>
-void rowShift() {}
+void rowShift(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
-void columnMix() {}
+void columnMix(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
-void RoundKeyAdd() {}
+void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void round(unsigned char (&cypherText)[rows][cols]) {
    byteSub(cypherText);
-   rowShift();
-   columnMix();
-   RoundKeyAdd();
+   rowShift(cypherText);
+   columnMix(cypherText);
+   RoundKeyAdd(cypherText);
 }
 template <size_t rows, size_t cols>
-void finalRound() {
-   byteSub();
-   rowShift();
-   RoundKeyAdd();
+void finalRound(unsigned char (&cypherText)[rows][cols]) {
+   byteSub(cypherText);
+   rowShift(cypherText);
+   RoundKeyAdd(cypherText);
 }
 
 template <size_t rows, size_t cols>
 void inverseRound(unsigned char (&unCypherText)[rows][cols]) {
    inverseByteSub(unCypherText);
-   rowShift();
-   columnMix();
-   RoundKeyAdd();
+   rowShift(unCypherText);
+   columnMix(unCypherText);
+   RoundKeyAdd(unCypherText);
 }
 template <size_t rows, size_t cols>
-void inverseFinalRound() {}
+void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void crypt(unsigned char (&cypherText)[rows][cols]) {
