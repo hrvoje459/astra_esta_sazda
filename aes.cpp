@@ -50,14 +50,21 @@ void inverseByteSub(unsigned char (&cypherText)[rows][cols]) {
       }
    }
 }
+
 template <size_t rows, size_t cols>
 void rowShift(unsigned char (&cypherText)[rows][cols]) {}
+template <size_t rows, size_t cols>
+void inverseRowShift(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void columnMix(unsigned char (&cypherText)[rows][cols]) {}
+template <size_t rows, size_t cols>
+void inverseColumnMix(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
+template <size_t rows, size_t cols>
+void inverseRoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void round(unsigned char (&cypherText)[rows][cols]) {
@@ -72,24 +79,36 @@ void finalRound(unsigned char (&cypherText)[rows][cols]) {
    rowShift(cypherText);
    RoundKeyAdd(cypherText);
 }
+template <size_t rows, size_t cols>
+void crypt(unsigned char (&cypherText)[rows][cols]) {
+   RoundKeyAdd(cypherText);
+   for (int i = 0; i < 10; i++) {
+      round(cypherText);
+   }
+   finalRound(cypherText);
+}
 
 template <size_t rows, size_t cols>
 void inverseRound(unsigned char (&unCypherText)[rows][cols]) {
+   inverseRoundKeyAdd(unCypherText);
+   inverseColumnMix(unCypherText);
+   inverseRowShift(unCypherText);
    inverseByteSub(unCypherText);
-   rowShift(unCypherText);
-   columnMix(unCypherText);
-   RoundKeyAdd(unCypherText);
 }
 template <size_t rows, size_t cols>
-void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {}
+void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {
+   inverseRoundKeyAdd(unCypherText);
+   inverseRowShift(unCypherText);
+   inverseByteSub(unCypherText);
+}
 
 template <size_t rows, size_t cols>
-void crypt(unsigned char (&cypherText)[rows][cols]) {
-   round(cypherText);
-}
-template <size_t rows, size_t cols>
 void deCrypt(unsigned char (&unCypherText)[rows][cols]) {
-   inverseRound(unCypherText);
+   inversefinalRound(cypherText);
+   for (int i = 0; i < 10; i++) {
+      inverseRound(cypherText);
+   }
+   inverseRoundKeyAdd(unCypherText);
 }
 int main(void) {
    unsigned char tablicaPlainText[4][4];
