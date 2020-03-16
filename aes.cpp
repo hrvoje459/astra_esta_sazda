@@ -42,35 +42,59 @@ void byteSub(unsigned char (&cypherText)[rows][cols]) {
       }
    }
 }
-void rowShift() {}
-void columnMix() {}
-void RoundKeyAdd() {}
+template <size_t rows, size_t cols>
+void inverseByteSub(unsigned char (&cypherText)[rows][cols]) {
+   for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+         cypherText[i][j] = SBoxInverse[cypherText[i][j]];
+      }
+   }
+}
+template <size_t rows, size_t cols>
+void rowShift(unsigned char (&cypherText)[rows][cols]) {}
+
+template <size_t rows, size_t cols>
+void columnMix(unsigned char (&cypherText)[rows][cols]) {}
+
+template <size_t rows, size_t cols>
+void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void round(unsigned char (&cypherText)[rows][cols]) {
    byteSub(cypherText);
-   rowShift();
-   columnMix();
-   RoundKeyAdd();
+   rowShift(cypherText);
+   columnMix(cypherText);
+   RoundKeyAdd(cypherText);
 }
-/* void finalRound() {
-   byteSub();
-   rowShift();
-   RoundKeyAdd();
-} */
+template <size_t rows, size_t cols>
+void finalRound(unsigned char (&cypherText)[rows][cols]) {
+   byteSub(cypherText);
+   rowShift(cypherText);
+   RoundKeyAdd(cypherText);
+}
 
-void inverseRound() {}
-void inverseFinalRound() {}
+template <size_t rows, size_t cols>
+void inverseRound(unsigned char (&unCypherText)[rows][cols]) {
+   inverseByteSub(unCypherText);
+   rowShift(unCypherText);
+   columnMix(unCypherText);
+   RoundKeyAdd(unCypherText);
+}
+template <size_t rows, size_t cols>
+void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {}
 
 template <size_t rows, size_t cols>
 void crypt(unsigned char (&cypherText)[rows][cols]) {
    round(cypherText);
 }
-void deCrypt() {}
-
+template <size_t rows, size_t cols>
+void deCrypt(unsigned char (&unCypherText)[rows][cols]) {
+   inverseRound(unCypherText);
+}
 int main(void) {
    unsigned char tablicaPlainText[4][4];
    unsigned char tablicaCypherText[4][4];
+   unsigned char tablicaUnCypherText[4][4];
 
    string line;
    string dat = "plainText.txt";
@@ -88,18 +112,29 @@ int main(void) {
    }
 
    crypt(tablicaCypherText);
+   for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+         tablicaUnCypherText[i][j] = tablicaCypherText[i][j];
+      }
+   }
+   deCrypt(tablicaUnCypherText);
 
+   for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+         cout << (tablicaPlainText[i][j]) << " ";
+      }
+   }
+   cout << endl;
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
          cout << (tablicaCypherText[i][j]) << " ";
       }
-   } /*
-    cout << endl;
-    for (int i = 0; i < 4; i++) {
-       for (int j = 0; j < 4; j++) {
-          cout << SBox[tablicaPlainText[i][j]];
-          cout << " " << int(tablicaCypherText[i][j]) << " ";
-       }
-    } */
+   }
+   cout << endl;
+   for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+         cout << (tablicaUnCypherText[i][j]) << " ";
+      }
+   }
    return 0;
 }
