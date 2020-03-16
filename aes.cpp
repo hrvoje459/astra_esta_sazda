@@ -104,9 +104,9 @@ void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {
 
 template <size_t rows, size_t cols>
 void deCrypt(unsigned char (&unCypherText)[rows][cols]) {
-   inversefinalRound(cypherText);
+   inverseFinalRound(unCypherText);
    for (int i = 0; i < 10; i++) {
-      inverseRound(cypherText);
+      inverseRound(unCypherText);
    }
    inverseRoundKeyAdd(unCypherText);
 }
