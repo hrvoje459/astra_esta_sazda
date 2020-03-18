@@ -34,6 +34,7 @@ unsigned char SBoxInverse[256] = {
     174, 42,  245, 176, 200, 235, 187, 60,  131, 83,  153, 97,  23,  43,  4,   126, 186, 119, 214,
     38,  225, 105, 20,  99,  85,  33,  12,  125};
 
+// SUBSTITUIRAJ
 template <size_t rows, size_t cols>
 void byteSub(unsigned char (&cypherText)[rows][cols]) {
    for (int i = 0; i < 4; i++) {
@@ -51,21 +52,47 @@ void inverseByteSub(unsigned char (&cypherText)[rows][cols]) {
    }
 }
 
+// POSMAKNI REDOVE
 template <size_t rows, size_t cols>
-void rowShift(unsigned char (&cypherText)[rows][cols]) {}
+void posmakni(unsigned char (&cypherText)[rows][cols], int n) {
+   {
+      unsigned char temp = cypherText[n][3];
+      cypherText[n][3] = cypherText[n][2];
+      cypherText[n][2] = cypherText[n][1];
+      cypherText[n][1] = cypherText[n][0];
+      cypherText[n][0] = temp;
+   }
+}
 template <size_t rows, size_t cols>
-void inverseRowShift(unsigned char (&cypherText)[rows][cols]) {}
+void rowShift(unsigned char (&cypherText)[rows][cols]) {
+   for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < i; j++) {
+         posmakni(cypherText, i);
+      }
+   }
+}
+template <size_t rows, size_t cols>
+void inverseRowShift(unsigned char (&unCypherText)[rows][cols]) {
+   for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4 - i; j++) {
+         posmakni(unCypherText, i);
+      }
+   }
+}
 
+// IZMJESAJ STUPCE
 template <size_t rows, size_t cols>
 void columnMix(unsigned char (&cypherText)[rows][cols]) {}
 template <size_t rows, size_t cols>
 void inverseColumnMix(unsigned char (&cypherText)[rows][cols]) {}
 
+// DODAJ KLJUCEVE
 template <size_t rows, size_t cols>
 void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
 template <size_t rows, size_t cols>
 void inverseRoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
 
+// KRIPTIRANJE
 template <size_t rows, size_t cols>
 void round(unsigned char (&cypherText)[rows][cols]) {
    byteSub(cypherText);
@@ -88,6 +115,7 @@ void crypt(unsigned char (&cypherText)[rows][cols]) {
    finalRound(cypherText);
 }
 
+// DEKRIPTIRANJE
 template <size_t rows, size_t cols>
 void inverseRound(unsigned char (&unCypherText)[rows][cols]) {
    inverseRoundKeyAdd(unCypherText);
@@ -110,6 +138,8 @@ void deCrypt(unsigned char (&unCypherText)[rows][cols]) {
    }
    inverseRoundKeyAdd(unCypherText);
 }
+
+// MAIN
 int main(void) {
    unsigned char tablicaPlainText[4][4];
    unsigned char tablicaCypherText[4][4];
@@ -125,8 +155,8 @@ int main(void) {
    stream.close();
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-         tablicaPlainText[i][j] = line[4 * i + j];
-         tablicaCypherText[i][j] = line[4 * i + j];
+         tablicaPlainText[j][i] = line[4 * i + j];
+         tablicaCypherText[j][i] = line[4 * i + j];
       }
    }
 
@@ -140,19 +170,19 @@ int main(void) {
 
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-         cout << (tablicaPlainText[i][j]) << " ";
+         cout << (tablicaPlainText[j][i]) << " ";
       }
    }
    cout << endl;
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-         cout << (tablicaCypherText[i][j]) << " ";
+         cout << (tablicaCypherText[j][i]) << " ";
       }
    }
    cout << endl;
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-         cout << (tablicaUnCypherText[i][j]) << " ";
+         cout << (tablicaUnCypherText[j][i]) << " ";
       }
    }
    return 0;
