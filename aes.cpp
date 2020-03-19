@@ -121,9 +121,38 @@ void inverseRowShift(unsigned char (&unCypherText)[rows][cols]) {
 // IZMJESAJ STUPCE
 
 template <size_t rows, size_t cols>
-void columnMix(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {}
+void columnMix(unsigned char (&cypherText)[rows][cols]) {
+   unsigned char helperArray[4];
+   for (int k = 0; k < 4; k++) {
+      for (int l = 0; l < 4; l++) {
+         helperArray[l] = cypherText[l][k];
+      }
+      for (int i = 0; i < 4; i++) {
+         unsigned char temp = 0;
+         for (int j = 0; j < 4; j++) {
+            temp ^= puta_X(mullTable[i][j], helperArray[j]);
+         }
+         cypherText[i][k] = temp;
+      }
+   }
+}
 template <size_t rows, size_t cols>
-void inverseColumnMix(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {}
+void inverseColumnMix(unsigned char (&unCypherText)[rows][cols]) {
+   unsigned char helperArray[4];
+   for (int k = 0; k < 4; k++) {
+      for (int l = 0; l < 4; l++) {
+         helperArray[l] = unCypherText[l][k];
+      }
+      for (int i = 0; i < 4; i++) {
+         unsigned char temp = 0;
+         for (int j = 0; j < 4; j++) {
+            temp ^= puta_X(inverseMullTable[i][j], helperArray[j]);
+         }
+         unCypherText[i][k] = temp;
+      }
+   }
+}
+
 // DODAJ KLJUCEVE
 template <size_t rows, size_t cols>
 void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
@@ -135,7 +164,7 @@ template <size_t rows, size_t cols>
 void round(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {
    byteSub(cypherText);
    rowShift(cypherText);
-   columnMix(cypherText, plainText);
+   columnMix(cypherText);
    RoundKeyAdd(cypherText);
 }
 template <size_t rows, size_t cols>
@@ -157,7 +186,7 @@ void crypt(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[r
 template <size_t rows, size_t cols>
 void inverseRound(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {
    inverseRoundKeyAdd(unCypherText);
-   inverseColumnMix(unCypherText, cypherText);
+   inverseColumnMix(unCypherText);
    inverseRowShift(unCypherText);
    inverseByteSub(unCypherText);
 }
