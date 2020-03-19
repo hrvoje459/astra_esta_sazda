@@ -33,7 +33,45 @@ unsigned char SBoxInverse[256] = {
     81,  127, 169, 25,  181, 74,  13,  45,  229, 122, 159, 147, 201, 156, 239, 160, 224, 59,  77,
     174, 42,  245, 176, 200, 235, 187, 60,  131, 83,  153, 97,  23,  43,  4,   126, 186, 119, 214,
     38,  225, 105, 20,  99,  85,  33,  12,  125};
+unsigned char mullTable[4][4] = {{2, 3, 1, 1}, {1, 2, 3, 1}, {1, 1, 2, 3}, {3, 1, 1, 2}};
+unsigned char inverseMullTable[4][4] = {{14, 11, 13, 9}, {9, 14, 11, 13}, {13, 9, 14, 11}, {11, 13, 9, 14}};
 
+unsigned char galoisMull(unsigned char b) {
+   if (b >= 128) {
+      b = b << 1;
+      b ^= 0x1B;
+   } else {
+      b = b << 1;
+   }
+   return b;
+}
+unsigned char puta_X(int mult, unsigned char b) {
+   unsigned char out;
+   switch (mult) {
+   case 1:
+      out = b;
+      break;
+   case 2:
+      out = galoisMull(b);
+      break;
+   case 3:
+      out = galoisMull(b) ^ b;
+      break;
+   case 9:
+      out = galoisMull(galoisMull(galoisMull(b))) ^ b;
+      break;
+   case 11:
+      out = galoisMull(galoisMull(galoisMull(b)) ^ b) ^ b;
+      break;
+   case 13:
+      out = galoisMull(galoisMull(galoisMull(b) ^ b)) ^ b;
+      break;
+   case 14:
+      out = galoisMull(galoisMull(galoisMull(b) ^ b) ^ b);
+      break;
+   }
+   return out;
+}
 // SUBSTITUIRAJ
 template <size_t rows, size_t cols>
 void byteSub(unsigned char (&cypherText)[rows][cols]) {
@@ -56,11 +94,11 @@ void inverseByteSub(unsigned char (&cypherText)[rows][cols]) {
 template <size_t rows, size_t cols>
 void posmakni(unsigned char (&cypherText)[rows][cols], int n) {
    {
-      unsigned char temp = cypherText[n][3];
-      cypherText[n][3] = cypherText[n][2];
-      cypherText[n][2] = cypherText[n][1];
-      cypherText[n][1] = cypherText[n][0];
-      cypherText[n][0] = temp;
+      unsigned char temp = cypherText[n][0];
+      cypherText[n][0] = cypherText[n][1];
+      cypherText[n][1] = cypherText[n][2];
+      cypherText[n][2] = cypherText[n][3];
+      cypherText[n][3] = temp;
    }
 }
 template <size_t rows, size_t cols>
@@ -81,11 +119,11 @@ void inverseRowShift(unsigned char (&unCypherText)[rows][cols]) {
 }
 
 // IZMJESAJ STUPCE
-template <size_t rows, size_t cols>
-void columnMix(unsigned char (&cypherText)[rows][cols]) {}
-template <size_t rows, size_t cols>
-void inverseColumnMix(unsigned char (&cypherText)[rows][cols]) {}
 
+template <size_t rows, size_t cols>
+void columnMix(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {}
+template <size_t rows, size_t cols>
+void inverseColumnMix(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {}
 // DODAJ KLJUCEVE
 template <size_t rows, size_t cols>
 void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
@@ -94,10 +132,10 @@ void inverseRoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
 
 // KRIPTIRANJE
 template <size_t rows, size_t cols>
-void round(unsigned char (&cypherText)[rows][cols]) {
+void round(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {
    byteSub(cypherText);
    rowShift(cypherText);
-   columnMix(cypherText);
+   columnMix(cypherText, plainText);
    RoundKeyAdd(cypherText);
 }
 template <size_t rows, size_t cols>
@@ -107,19 +145,19 @@ void finalRound(unsigned char (&cypherText)[rows][cols]) {
    RoundKeyAdd(cypherText);
 }
 template <size_t rows, size_t cols>
-void crypt(unsigned char (&cypherText)[rows][cols]) {
+void crypt(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {
    RoundKeyAdd(cypherText);
    for (int i = 0; i < 10; i++) {
-      round(cypherText);
+      round(cypherText, plainText);
    }
    finalRound(cypherText);
 }
 
 // DEKRIPTIRANJE
 template <size_t rows, size_t cols>
-void inverseRound(unsigned char (&unCypherText)[rows][cols]) {
+void inverseRound(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {
    inverseRoundKeyAdd(unCypherText);
-   inverseColumnMix(unCypherText);
+   inverseColumnMix(unCypherText, cypherText);
    inverseRowShift(unCypherText);
    inverseByteSub(unCypherText);
 }
@@ -131,10 +169,10 @@ void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {
 }
 
 template <size_t rows, size_t cols>
-void deCrypt(unsigned char (&unCypherText)[rows][cols]) {
+void deCrypt(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {
    inverseFinalRound(unCypherText);
    for (int i = 0; i < 10; i++) {
-      inverseRound(unCypherText);
+      inverseRound(unCypherText, cypherText);
    }
    inverseRoundKeyAdd(unCypherText);
 }
@@ -160,13 +198,13 @@ int main(void) {
       }
    }
 
-   crypt(tablicaCypherText);
+   crypt(tablicaCypherText, tablicaPlainText);
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
          tablicaUnCypherText[i][j] = tablicaCypherText[i][j];
       }
    }
-   deCrypt(tablicaUnCypherText);
+   deCrypt(tablicaUnCypherText, tablicaCypherText);
 
    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
