@@ -2,3 +2,8 @@
 Software implementation of AES encryption algorithm..
 
 ..in the making
+
+TO DO:
+  - key scheduler
+  - addRoundKey()
+  - make it pretty
