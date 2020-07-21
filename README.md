@@ -8,4 +8,5 @@ TO DO:
   - ispočetka napraviti GMull
   - key scheduler
   - addRoundKey()
+  - implementirati različite duljine ključa i poruka
   - make it pretty
