@@ -5,7 +5,8 @@ Software implementation of AES encryption algorithm..
 
 TO DO:
   - <s>napravit PRAVO množenje u G. polju</s>
-  - ispočetka napraviti GMull
+  - <s>ispočetka napraviti GMull</s>
+  - ovaj GMull možda radi, ali svejedno želim pravilno implmentirati operacije u G polju
   - key scheduler
   - addRoundKey()
   - implementirati različite duljine ključa i poruka
