@@ -37,220 +37,218 @@ unsigned char mullTable[4][4] = {{2, 3, 1, 1}, {1, 2, 3, 1}, {1, 1, 2, 3}, {3, 1
 unsigned char inverseMullTable[4][4] = {{14, 11, 13, 9}, {9, 14, 11, 13}, {13, 9, 14, 11}, {11, 13, 9, 14}};
 
 unsigned char galoisMull(unsigned char b) {
-   if (b >= 128) {
-      b = b << 1;
-      b ^= 0x1B;
-   } else {
-      b = b << 1;
-   }
-   return b;
+    if (b >= 128) {
+        b = b << 1;
+        b ^= 0x1B;
+    } else {
+        b = b << 1;
+    }
+    return b;
 }
 unsigned char puta_X(int mult, unsigned char b) {
-   unsigned char out;
-   switch (mult) {
-   case 1:
-      out = b;
-      break;
-   case 2:
-      out = galoisMull(b);
-      break;
-   case 3:
-      out = galoisMull(b) ^ b;
-      break;
-   case 9:
-      out = galoisMull(galoisMull(galoisMull(b))) ^ b;
-      break;
-   case 11:
-      out = galoisMull(galoisMull(galoisMull(b)) ^ b) ^ b;
-      break;
-   case 13:
-      out = galoisMull(galoisMull(galoisMull(b) ^ b)) ^ b;
-      break;
-   case 14:
-      out = galoisMull(galoisMull(galoisMull(b) ^ b) ^ b);
-      break;
-   }
-   return out;
+    unsigned char out;
+    switch (mult) {
+    case 1:
+        out = b;
+        break;
+    case 2:
+        out = galoisMull(b);
+        break;
+    case 3:
+        out = galoisMull(b) ^ b;
+        break;
+    case 9:
+        out = galoisMull(galoisMull(galoisMull(b))) ^ b;
+        break;
+    case 11:
+        out = galoisMull(galoisMull(galoisMull(b)) ^ b) ^ b;
+        break;
+    case 13:
+        out = galoisMull(galoisMull(galoisMull(b) ^ b)) ^ b;
+        break;
+    case 14:
+        out = galoisMull(galoisMull(galoisMull(b) ^ b) ^ b);
+        break;
+    }
+    return out;
 }
 // SUBSTITUIRAJ
-template <size_t rows, size_t cols>
-void byteSub(unsigned char (&cypherText)[rows][cols]) {
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         cypherText[i][j] = SBox[cypherText[i][j]];
-      }
-   }
+void byteSub(unsigned char** cypherText) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            cypherText[i][j] = SBox[cypherText[i][j]];
+        }
+    }
 }
-template <size_t rows, size_t cols>
-void inverseByteSub(unsigned char (&cypherText)[rows][cols]) {
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         cypherText[i][j] = SBoxInverse[cypherText[i][j]];
-      }
-   }
+void inverseByteSub(unsigned char** cypherText) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            cypherText[i][j] = SBoxInverse[cypherText[i][j]];
+        }
+    }
 }
 
 // POSMAKNI REDOVE
-template <size_t rows, size_t cols>
-void posmakni(unsigned char (&cypherText)[rows][cols], int n) {
-   {
-      unsigned char temp = cypherText[n][0];
-      cypherText[n][0] = cypherText[n][1];
-      cypherText[n][1] = cypherText[n][2];
-      cypherText[n][2] = cypherText[n][3];
-      cypherText[n][3] = temp;
-   }
+void posmakni(unsigned char** cypherText, int n) {
+    {
+        unsigned char temp = cypherText[n][0];
+        cypherText[n][0] = cypherText[n][1];
+        cypherText[n][1] = cypherText[n][2];
+        cypherText[n][2] = cypherText[n][3];
+        cypherText[n][3] = temp;
+    }
 }
-template <size_t rows, size_t cols>
-void rowShift(unsigned char (&cypherText)[rows][cols]) {
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < i; j++) {
-         posmakni(cypherText, i);
-      }
-   }
+void rowShift(unsigned char** cypherText) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < i; j++) {
+            posmakni(cypherText, i);
+        }
+    }
 }
-template <size_t rows, size_t cols>
-void inverseRowShift(unsigned char (&unCypherText)[rows][cols]) {
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4 - i; j++) {
-         posmakni(unCypherText, i);
-      }
-   }
+void inverseRowShift(unsigned char** unCypherText) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4 - i; j++) {
+            posmakni(unCypherText, i);
+        }
+    }
 }
 
 // IZMJESAJ STUPCE
 
-template <size_t rows, size_t cols>
-void columnMix(unsigned char (&cypherText)[rows][cols]) {
-   unsigned char helperArray[4];
-   for (int k = 0; k < 4; k++) {
-      for (int l = 0; l < 4; l++) {
-         helperArray[l] = cypherText[l][k];
-      }
-      for (int i = 0; i < 4; i++) {
-         unsigned char temp = 0;
-         for (int j = 0; j < 4; j++) {
-            temp ^= puta_X(mullTable[i][j], helperArray[j]);
-         }
-         cypherText[i][k] = temp;
-      }
-   }
+void columnMix(unsigned char** cypherText) {
+    unsigned char helperArray[4];
+    for (int k = 0; k < 4; k++) {
+        for (int l = 0; l < 4; l++) {
+            helperArray[l] = cypherText[l][k];
+        }
+        for (int i = 0; i < 4; i++) {
+            unsigned char temp = 0;
+            for (int j = 0; j < 4; j++) {
+                temp ^= puta_X(mullTable[i][j], helperArray[j]);
+            }
+            cypherText[i][k] = temp;
+        }
+    }
 }
-template <size_t rows, size_t cols>
-void inverseColumnMix(unsigned char (&unCypherText)[rows][cols]) {
-   unsigned char helperArray[4];
-   for (int k = 0; k < 4; k++) {
-      for (int l = 0; l < 4; l++) {
-         helperArray[l] = unCypherText[l][k];
-      }
-      for (int i = 0; i < 4; i++) {
-         unsigned char temp = 0;
-         for (int j = 0; j < 4; j++) {
-            temp ^= puta_X(inverseMullTable[i][j], helperArray[j]);
-         }
-         unCypherText[i][k] = temp;
-      }
-   }
+
+void inverseColumnMix(unsigned char** unCypherText) {
+    unsigned char helperArray[4];
+    for (int k = 0; k < 4; k++) {
+        for (int l = 0; l < 4; l++) {
+            helperArray[l] = unCypherText[l][k];
+        }
+        for (int i = 0; i < 4; i++) {
+            unsigned char temp = 0;
+            for (int j = 0; j < 4; j++) {
+                temp ^= puta_X(inverseMullTable[i][j], helperArray[j]);
+            }
+            unCypherText[i][k] = temp;
+        }
+    }
 }
 
 // DODAJ KLJUCEVE
-template <size_t rows, size_t cols>
-void RoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
-template <size_t rows, size_t cols>
-void inverseRoundKeyAdd(unsigned char (&cypherText)[rows][cols]) {}
+void RoundKeyAdd(unsigned char** cypherText) {}
+
+void inverseRoundKeyAdd(unsigned char** cypherText) {}
 
 // KRIPTIRANJE
-template <size_t rows, size_t cols>
-void round(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {
-   byteSub(cypherText);
-   rowShift(cypherText);
-   columnMix(cypherText);
-   RoundKeyAdd(cypherText);
+
+void round(unsigned char** cypherText, unsigned char** plainText) {
+    byteSub(cypherText);
+    rowShift(cypherText);
+    columnMix(cypherText);
+    RoundKeyAdd(cypherText);
 }
-template <size_t rows, size_t cols>
-void finalRound(unsigned char (&cypherText)[rows][cols]) {
-   byteSub(cypherText);
-   rowShift(cypherText);
-   RoundKeyAdd(cypherText);
+void finalRound(unsigned char** cypherText) {
+    byteSub(cypherText);
+    rowShift(cypherText);
+    RoundKeyAdd(cypherText);
 }
-template <size_t rows, size_t cols>
-void crypt(unsigned char (&cypherText)[rows][cols], unsigned char (&plainText)[rows][cols]) {
-   RoundKeyAdd(cypherText);
-   for (int i = 0; i < 10; i++) {
-      round(cypherText, plainText);
-   }
-   finalRound(cypherText);
+void crypt(unsigned char** cypherText, unsigned char** plainText) {
+    RoundKeyAdd(cypherText);
+    for (int i = 0; i < 10; i++) {
+        round(cypherText, plainText);
+    }
+    finalRound(cypherText);
 }
 
 // DEKRIPTIRANJE
-template <size_t rows, size_t cols>
-void inverseRound(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {
-   inverseRoundKeyAdd(unCypherText);
-   inverseColumnMix(unCypherText);
-   inverseRowShift(unCypherText);
-   inverseByteSub(unCypherText);
+void inverseRound(unsigned char** unCypherText, unsigned char** cypherText) {
+    inverseRoundKeyAdd(unCypherText);
+    inverseColumnMix(unCypherText);
+    inverseRowShift(unCypherText);
+    inverseByteSub(unCypherText);
 }
-template <size_t rows, size_t cols>
-void inverseFinalRound(unsigned char (&unCypherText)[rows][cols]) {
-   inverseRoundKeyAdd(unCypherText);
-   inverseRowShift(unCypherText);
-   inverseByteSub(unCypherText);
+void inverseFinalRound(unsigned char** unCypherText) {
+    inverseRoundKeyAdd(unCypherText);
+    inverseRowShift(unCypherText);
+    inverseByteSub(unCypherText);
 }
 
-template <size_t rows, size_t cols>
-void deCrypt(unsigned char (&unCypherText)[rows][cols], unsigned char (&cypherText)[rows][cols]) {
-   inverseFinalRound(unCypherText);
-   for (int i = 0; i < 10; i++) {
-      inverseRound(unCypherText, cypherText);
-   }
-   inverseRoundKeyAdd(unCypherText);
+void deCrypt(unsigned char** unCypherText, unsigned char** cypherText) {
+    inverseFinalRound(unCypherText);
+    for (int i = 0; i < 10; i++) {
+        inverseRound(unCypherText, cypherText);
+    }
+    inverseRoundKeyAdd(unCypherText);
 }
 
 // MAIN
 int main(void) {
-   unsigned char tablicaPlainText[4][4];
-   unsigned char tablicaCypherText[4][4];
-   unsigned char tablicaUnCypherText[4][4];
+    unsigned char** tablicaPlainText;
+    unsigned char** tablicaCypherText;
+    unsigned char** tablicaUnCypherText;
 
-   string line;
-   string dat = "plainText.txt";
-   ifstream stream;
-   int n;
+    tablicaPlainText = new unsigned char*[4];
+    tablicaCypherText = new unsigned char*[4];
+    tablicaUnCypherText = new unsigned char*[4];
 
-   stream.open(dat);
-   getline(stream, line);
-   stream.close();
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         tablicaPlainText[j][i] = line[4 * i + j];
-         tablicaCypherText[j][i] = line[4 * i + j];
-      }
-   }
+    for (int i = 0; i < 4; i++) {
+        tablicaPlainText[i] = new unsigned char[4];
+        tablicaCypherText[i] = new unsigned char[4];
+        tablicaUnCypherText[i] = new unsigned char[4];
+    }
 
-   crypt(tablicaCypherText, tablicaPlainText);
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         tablicaUnCypherText[i][j] = tablicaCypherText[i][j];
-      }
-   }
-   deCrypt(tablicaUnCypherText, tablicaCypherText);
+    string line;
+    string dat = "plainText.txt";
+    ifstream stream;
+    int n;
 
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         cout << (tablicaPlainText[j][i]) << " ";
-      }
-   }
-   cout << endl;
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         cout << (tablicaCypherText[j][i]) << " ";
-      }
-   }
-   cout << endl;
-   for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-         cout << (tablicaUnCypherText[j][i]) << " ";
-      }
-   }
-   return 0;
+    stream.open(dat);
+    getline(stream, line);
+    stream.close();
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            tablicaPlainText[j][i] = line[4 * i + j];
+            tablicaCypherText[j][i] = line[4 * i + j];
+        }
+    }
+
+    crypt(tablicaCypherText, tablicaPlainText);
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            tablicaUnCypherText[i][j] = tablicaCypherText[i][j];
+        }
+    }
+    deCrypt(tablicaUnCypherText, tablicaCypherText);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            cout << (tablicaPlainText[j][i]) << " ";
+        }
+    }
+    cout << endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            cout << (tablicaCypherText[j][i]) << " ";
+        }
+    }
+    cout << endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            cout << (tablicaUnCypherText[j][i]) << " ";
+        }
+    }
+    return 0;
 }
