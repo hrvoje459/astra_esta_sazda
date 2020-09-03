@@ -12,3 +12,9 @@ TO DO:
   - addRoundKey()
   - implementirati različite duljine ključa i poruka
   - make it pretty
+
+DO TO:
+  - napravljen GMull 
+    -množenje prima dva polinoma do max stupnja 15, radi ispravno ako je umnožak max stupnja 15 - dovoljno dobro
+    - dijeljenje radi za sve polinome do max stupnja 15
+    -funkcija gPoljePomnozi vraća umnožak polinoma modulo aes-polinom (hex = 11B)
