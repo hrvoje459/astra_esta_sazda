@@ -3,6 +3,10 @@ Software implementation of AES encryption algorithm..
 
 ..in the making
 
+Compiling:
+g++ *.cpp -o aes.exe
+
+
 TO DO:
   - <s>napravit PRAVO množenje u G. polju</s>
   - <s>ispočetka napraviti GMull</s>
