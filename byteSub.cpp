@@ -36,6 +36,7 @@ unsigned char SBoxInverse[256] = {
     174, 42,  245, 176, 200, 235, 187, 60,  131, 83,  153, 97,  23,  43,  4,   126, 186, 119, 214,
     38,  225, 105, 20,  99,  85,  33,  12,  125};
 
+
 // Vrati iz kutije
 unsigned char izSboxa(unsigned char ulaz) { return SBox[ulaz]; }
 

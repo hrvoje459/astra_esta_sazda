@@ -10,6 +10,7 @@ void posmakni(unsigned char* cypherText) {
     cypherText[1] = cypherText[2];
     cypherText[2] = cypherText[3];
     cypherText[3] = temp;
+
 }
 void rowShift(unsigned char** cypherText) {
     for (int i = 0; i < 4; i++) {

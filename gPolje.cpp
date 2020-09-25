@@ -56,6 +56,7 @@ unsigned short int gPoljePomnozi(unsigned short a, unsigned short b) {
 }
 unsigned char gPoljeZbroji(unsigned char a, unsigned char b) { return a ^ b; }
 
+
 // generiranje konstanti runde
 
 /* int main(void) {
