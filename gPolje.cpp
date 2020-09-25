@@ -55,3 +55,17 @@ unsigned short int gPoljePomnozi(unsigned short a, unsigned short b) {
     return podijeliPolinomski(pomnoziPolinomski(a, b), 0x011b);
 }
 unsigned char gPoljeZbroji(unsigned char a, unsigned char b) { return a ^ b; }
+
+
+// generiranje konstanti runde
+
+/* int main(void) {
+    unsigned short int p = 1;
+
+    for (int i = 0; i < 30; i++) {
+        cout << hex << p << endl;
+        p = podijeliPolinomski(pomnoziPolinomski(2, p), 0x11b);
+    }
+
+    return 0;
+} */
