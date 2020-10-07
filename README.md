@@ -11,15 +11,11 @@ TO DO:
   - <s>napravit PRAVO množenje u G. polju</s>
   - <s>ispočetka napraviti GMull</s>
   - <s>ovaj GMull možda radi, ali svejedno</s> želim pravilno implementirati operacije u G polju
-  - <s>ispočetka napraviti GMull</S>
-  - key schedule
-  - addRoundKey()
+  - <s>ispočetka napraviti GMull</s>
+  - <s>key schedule</s>
+  - <s>addRoundKey()</s>
   - implementirati različite duljine ključa i poruka
   - make it pretty
 
 DO TO:
-  - napravljen GMull 
-      - množenje prima dva polinoma do max stupnja 15, radi ispravno ako je umnožak max stupnja 15 - dovoljno dobro
-      - dijeljenje radi za sve polinome do max stupnja 15
-      - funkcija gPoljePomnozi vraća umnožak polinoma modulo aes-polinom (hex = 11B)
-      - radi i za generiranje konstanti runde
+  - aes algoritam, hardkodiran za 128 bitnu duljinu bloka i ključa
