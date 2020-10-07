@@ -1,49 +1,53 @@
 
 #include "aesHeader.h"
+#include <bitset>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 using namespace std;
 
 // KRIPTIRANJE
 
-void round(unsigned char** cypherText, unsigned char** plainText) {
+void round(unsigned char** cypherText, unsigned char** plainText, unsigned char** prosireniKljuc, int i) {
     byteSub(cypherText);
     rowShift(cypherText);
     columnMix(cypherText);
-    RoundKeyAdd(cypherText);
+    RoundKeyAdd(cypherText, prosireniKljuc, i);
 }
-void finalRound(unsigned char** cypherText) {
+void finalRound(unsigned char** cypherText, unsigned char** prosireniKljuc, int i) {
     byteSub(cypherText);
     rowShift(cypherText);
-    RoundKeyAdd(cypherText);
+    RoundKeyAdd(cypherText, prosireniKljuc, i);
 }
-void crypt(unsigned char** cypherText, unsigned char** plainText) {
-    RoundKeyAdd(cypherText);
-    for (int i = 0; i < 10; i++) {
-        round(cypherText, plainText);
+void crypt(unsigned char** cypherText, unsigned char** plainText, unsigned char** prosireniKljuc) {
+    int i = 0;
+    RoundKeyAdd(cypherText, prosireniKljuc, i);
+    for (i = 1; i < 10; i++) {
+        round(cypherText, plainText, prosireniKljuc, i);
     }
-    finalRound(cypherText);
+    finalRound(cypherText, prosireniKljuc, i);
 }
 
 // DEKRIPTIRANJE
-void inverseRound(unsigned char** unCypherText, unsigned char** cypherText) {
-    inverseRoundKeyAdd(unCypherText);
+void inverseRound(unsigned char** unCypherText, unsigned char** cypherText, unsigned char** prosireniKljuc, int i) {
+    inverseRoundKeyAdd(unCypherText, prosireniKljuc, i);
     inverseColumnMix(unCypherText);
     inverseRowShift(unCypherText);
     inverseByteSub(unCypherText);
 }
-void inverseFinalRound(unsigned char** unCypherText) {
-    inverseRoundKeyAdd(unCypherText);
+void inverseFinalRound(unsigned char** unCypherText, unsigned char** prosireniKljuc, int i) {
+    inverseRoundKeyAdd(unCypherText, prosireniKljuc, i);
     inverseRowShift(unCypherText);
     inverseByteSub(unCypherText);
 }
 
-void deCrypt(unsigned char** unCypherText, unsigned char** cypherText) {
-    inverseFinalRound(unCypherText);
-    for (int i = 0; i < 10; i++) {
-        inverseRound(unCypherText, cypherText);
+void deCrypt(unsigned char** unCypherText, unsigned char** cypherText, unsigned char** prosireniKljuc) {
+    int i = 10;
+    inverseFinalRound(unCypherText, prosireniKljuc, i);
+    for (i = 9; i > 0; i--) {
+        inverseRound(unCypherText, cypherText, prosireniKljuc, i);
     }
-    inverseRoundKeyAdd(unCypherText);
+    inverseRoundKeyAdd(unCypherText, prosireniKljuc, i);
 }
 
 // MAIN
@@ -72,57 +76,91 @@ int main(void) {
     for (int i = 0; i < 44; i++) {
         prosireniKljuc[i] = new unsigned char[4];
     }
+    tablicaPlainText[0][0] = 0x32;
+    tablicaPlainText[1][0] = 0x43;
+    tablicaPlainText[2][0] = 0xf6;
+    tablicaPlainText[3][0] = 0xa8;
 
-    string line;
-    string dat = "plainText.txt";
-    ifstream stream;
-    int n;
+    tablicaPlainText[0][1] = 0x88;
+    tablicaPlainText[1][1] = 0x5a;
+    tablicaPlainText[2][1] = 0x30;
+    tablicaPlainText[3][1] = 0x8d;
 
-    stream.open(dat);
-    getline(stream, line);
-    stream.close();
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            tablicaPlainText[j][i] = line[4 * i + j];
-            tablicaCypherText[j][i] = line[4 * i + j];
-        }
-    }
+    tablicaPlainText[0][2] = 0x31;
+    tablicaPlainText[1][2] = 0x31;
+    tablicaPlainText[2][2] = 0x98;
+    tablicaPlainText[3][2] = 0xa2;
 
-    dat = "kljuc.pem";
+    tablicaPlainText[0][3] = 0xe0;
+    tablicaPlainText[1][3] = 0x37;
+    tablicaPlainText[2][3] = 0x07;
+    tablicaPlainText[3][3] = 0x34;
 
-    stream.open(dat);
-    getline(stream, line);
-    stream.close();
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            kljuc[j][i] = line[4 * i + j];
-        }
-    }
+    tablicaCypherText[0][0] = 0x32;
+    tablicaCypherText[1][0] = 0x43;
+    tablicaCypherText[2][0] = 0xf6;
+    tablicaCypherText[3][0] = 0xa8;
+
+    tablicaCypherText[0][1] = 0x88;
+    tablicaCypherText[1][1] = 0x5a;
+    tablicaCypherText[2][1] = 0x30;
+    tablicaCypherText[3][1] = 0x8d;
+
+    tablicaCypherText[0][2] = 0x31;
+    tablicaCypherText[1][2] = 0x31;
+    tablicaCypherText[2][2] = 0x98;
+    tablicaCypherText[3][2] = 0xa2;
+
+    tablicaCypherText[0][3] = 0xe0;
+    tablicaCypherText[1][3] = 0x37;
+    tablicaCypherText[2][3] = 0x07;
+    tablicaCypherText[3][3] = 0x34;
+
+    kljuc[0][0] = 0x2b;
+    kljuc[1][0] = 0x7e;
+    kljuc[2][0] = 0x15;
+    kljuc[3][0] = 0x16;
+
+    kljuc[0][1] = 0x28;
+    kljuc[1][1] = 0xae;
+    kljuc[2][1] = 0xd2;
+    kljuc[3][1] = 0xa6;
+
+    kljuc[0][2] = 0xab;
+    kljuc[1][2] = 0xf7;
+    kljuc[2][2] = 0x15;
+    kljuc[3][2] = 0x88;
+
+    kljuc[0][3] = 0x09;
+    kljuc[1][3] = 0xcf;
+    kljuc[2][3] = 0x4f;
+    kljuc[3][3] = 0x3c;
+
     keySchedule(kljuc, prosireniKljuc);
 
-    crypt(tablicaCypherText, tablicaPlainText);
+    crypt(tablicaCypherText, tablicaPlainText, prosireniKljuc);
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             tablicaUnCypherText[i][j] = tablicaCypherText[i][j];
         }
     }
-    deCrypt(tablicaUnCypherText, tablicaCypherText);
+    deCrypt(tablicaUnCypherText, tablicaCypherText, prosireniKljuc);
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            cout << (tablicaPlainText[j][i]) << " ";
+            cout << hex << (int)(tablicaPlainText[j][i]) << " ";
         }
     }
     cout << endl;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            cout << (tablicaCypherText[j][i]) << " ";
+            cout << hex << (int)(tablicaCypherText[j][i]) << " ";
         }
     }
     cout << endl;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            cout << (tablicaUnCypherText[j][i]) << " ";
+            cout << hex << (int)(tablicaUnCypherText[j][i]) << " ";
         }
     }
     return 0;
