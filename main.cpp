@@ -118,6 +118,7 @@ int main(int argc, char **argv)
 		{
 			for (int n = 0; n < 4; n++)
 			{
+
 				cout << hex << (int)tablicaTeksta[n][m] << " ";
 			}
 		}
