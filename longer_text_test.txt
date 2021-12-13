@@ -1,0 +1,3 @@
+0123456789ABCDEF
+demo razlike ecba i cbc, hrvoje, aes, mile45
+0123456789ABCDEF
