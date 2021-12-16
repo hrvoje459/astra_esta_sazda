@@ -33,28 +33,11 @@ void popuniKljucicTablicu(unsigned char **tablicaKljucica, unsigned char * /* st
 int main(int argc, char **argv)
 {
 
-	/* if (argc < 4)
-	{
-		cout << "Neispravan broj argumenta, program prima redom, tekstualnu datoteku čiji sadržaj treba enkriptirati i ključ, eventualno još i inicijalizacijski vektor" << endl;
-		return 0;
-	} */
-
-	/* if ((string)argv[1] != "ECB" && (string)argv[1] != "CBC")
-	{
-		cout << "Nepodržana vrsta enkripcije: " << argv[1] << ". Koristite \"ECB\" ili \"CBC\"" << endl;
-		return 0;
-	} */
-
 	string tip_aesa = argv[1];
 	string enc_dec = argv[2];
 
 	string datoteka_tekst = argv[3];
 	string datoteka_kljuc = argv[4];
-
-	/* cout << "Datoteka tekst: " << datoteka_tekst << endl;
-	cout << "Datoteka kljuc: " << datoteka_kljuc << endl; */
-
-	// Pročitaj prvih 16 znakova iz datoteke kao kljuc
 
 	unsigned char kljucic[16];
 
@@ -178,6 +161,7 @@ int main(int argc, char **argv)
 				cout << hex << setfill('0') << setw(2) << (int)(unsigned char)inic_vektor[i] << " ";
 			}
 			cout << endl;
+			cout << endl;
 
 			// sto se ne popuni bit će nule
 			unsigned char plaintext[16] = {};
@@ -192,38 +176,11 @@ int main(int argc, char **argv)
 			{
 				plaintext[i] = plaintext[i] ^ inic_vektor[i];
 			}
-			/* cout << "Tablica plaintext" << endl;
-			for (int i = 0; i < 16; i++)
-			{
-
-				cout << hex << setfill('0') << setw(2) << (int)(unsigned char)plaintext[i] << " ";
-			}
-			cout << endl; */
 
 			popuniTablicuPlaintextom(tablicaTeksta, plaintext);
 
-			// isprintaj tablicu teksta
-			/* 	cout << "Tablica teksta 1" << endl;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-				}
-			}
-			cout << endl; */
-
 			crypt(tablicaTeksta, prosireniKljuc);
 
-			/* cout << "Enkriptirana tablica teksta 1" << endl;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-				}
-			}
-			cout << endl; */
 			for (int m = 0; m < 4; m++)
 			{
 				for (int n = 0; n < 4; n++)
@@ -250,26 +207,8 @@ int main(int argc, char **argv)
 				}
 
 				popuniTablicuPlaintextom(tablicaTeksta, plaintext);
-				/* cout << "Tablica teksta " << i + 1 << endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-					}
-				}
-				cout << endl; */
-				crypt(tablicaTeksta, prosireniKljuc);
 
-				/* cout << "Enkriptirana tablica teksta " << i + 1 << endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-					}
-				}
-				cout << endl; */
+				crypt(tablicaTeksta, prosireniKljuc);
 
 				for (int m = 0; m < 4; m++)
 				{
@@ -368,17 +307,6 @@ int main(int argc, char **argv)
 
 			popuniTablicuPlaintextom(tablicaTeksta, ciphertext);
 
-			// isprintaj tablicu teksta
-			/* cout << "Tablica teksta 1" << endl;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-				}
-			}
-			cout << endl; */
-
 			deCrypt(tablicaTeksta, prosireniKljuc);
 			for (int k = 0; k < 4; k++)
 			{
@@ -388,16 +316,6 @@ int main(int argc, char **argv)
 				}
 			}
 
-			/* cout << "Dekriptirana tablica teksta 1" << endl;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-				}
-			}
-			cout << endl;
-			cout << endl; */
 			for (int m = 0; m < 4; m++)
 			{
 				for (int n = 0; n < 4; n++)
@@ -417,15 +335,7 @@ int main(int argc, char **argv)
 				}
 
 				popuniTablicuPlaintextom(tablicaTeksta, ciphertext);
-				/* cout << "Tablica teksta " << i + 1 << endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-					}
-				}
-				cout << endl; */
+
 				deCrypt(tablicaTeksta, prosireniKljuc);
 
 				for (int k = 0; k < 4; k++)
@@ -435,18 +345,6 @@ int main(int argc, char **argv)
 						tablicaTeksta[l][k] = cijela_datoteka[(i - 1) * 16 + k * 4 + l] ^ tablicaTeksta[l][k];
 					}
 				}
-
-				/* cout << "Dekriptirana tablica teksta " << i + 1 << endl;
-
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						cout << hex << setfill('0') << setw(2) << (int)(unsigned char)tablicaTeksta[j][i] << " ";
-					}
-				}
-				cout << endl;
-				cout << endl; */
 
 				for (int m = 0; m < 4; m++)
 				{

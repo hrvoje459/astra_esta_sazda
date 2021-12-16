@@ -1,0 +1,24 @@
+./main ECB ENK standard_tekst_test.txt standard_key_test.txt
+./main ECB DEK standard_encrypted_ecb.txt standard_key_test.txt
+
+
+./main ECB ENK neporavnat_tekst_test.txt standard_key_test.txt
+./main ECB DEK neporavnat_encrypted_ecb.txt standard_key_test.txt
+
+
+./main ECB ENK skroznova.txt standard_key_test.txt
+./main ECB DEK skroznova_encrypted_ecb.txt standard_key_test.txt
+
+
+
+
+./main CBC ENK standard_tekst_test.txt standard_key_test.txt inic_vektor.txt
+./main CBC DEK standard_encrypted_cbc.txt standard_key_test.txt inic_vektor.txt
+
+
+./main CBC ENK neporavnat_tekst_test.txt standard_key_test.txt inic_vektor.txt
+./main CBC DEK neporavnat_encrypted_cbc.txt standard_key_test.txt inic_vektor.txt
+
+
+./main CBC ENK skroznova.txt standard_key_test.txt inic_vektor.txt
+./main CBC DEK skroznova_encrypted_cbc.txt standard_key_test.txt inic_vektor.txt
