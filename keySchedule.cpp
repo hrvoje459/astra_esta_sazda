@@ -23,7 +23,10 @@ void popuniRconi(void)
 
 void keySchedule(unsigned char **kljuc, unsigned char **prosireniKljuc)
 {
-	cout << "kljuc: " << endl;
+	cout << endl
+		 << endl
+		 << endl;
+	cout << "KLJUC: " << endl;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
